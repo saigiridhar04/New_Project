@@ -142,6 +142,7 @@ New_Project/
 ├── edge_moondream_detector.py    # Edge PC component
 ├── cloud_storage.py              # Cloud integration
 ├── true_positive_detector.py     # True positive detection
+├── scheduler.py                  # Event scheduler (every 5 min)
 ├── controllers/
 │   └── safety_controller.py      # Safety controller
 ├── router/
@@ -151,10 +152,12 @@ New_Project/
 ├── prompts/
 │   └── scenario_prompts.py       # Scenario prompts
 ├── config.py                     # Configuration
-├── server.py                     # FastAPI server
-├── test_complete_workflow.py    # Complete workflow test
+├── server.py                     # FastAPI server with scheduler
+├── test_complete_workflow.py     # Complete workflow test
 ├── requirements.txt              # Dependencies
-└── README.md                     # Documentation
+├── venv/                         # Virtual environment
+├── README.md                     # Documentation
+└── USAGE.md                      # Usage guide
 ```
 
 ## Key Features

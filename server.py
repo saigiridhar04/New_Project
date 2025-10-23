@@ -8,12 +8,43 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.docs import get_swagger_ui_html
 from fastapi.openapi.utils import get_openapi
 from fastapi.staticfiles import StaticFiles
+from contextlib import asynccontextmanager
 
 import uvicorn
 from config import PORT, HOST, IMAGES_DIR, VIDEO_DIR, LOGS_DIR
 
 # Import routers
 from router.safety_router import router as safety_router
+from scheduler import EventScheduler
+
+# Global scheduler instance
+scheduler = None
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """
+    Application lifespan manager
+    Starts and stops the event scheduler
+    """
+    global scheduler
+    
+    # Startup
+    print("🚀 Starting Event Scheduler...")
+    scheduler = EventScheduler(
+        pull_interval_minutes=5,  # Pull every 5 minutes
+        use_local_storage=True,
+        moondream_api_url="http://localhost:2020"
+    )
+    scheduler.start_scheduler()
+    print("✅ Event Scheduler started")
+    
+    yield
+    
+    # Shutdown
+    print("🛑 Stopping Event Scheduler...")
+    if scheduler:
+        scheduler.stop_scheduler()
+    print("✅ Event Scheduler stopped")
 
 # Create FastAPI app
 app = FastAPI(
@@ -21,7 +52,8 @@ app = FastAPI(
     description="API for scenario-based safety detection using Moondream model",
     version="2.0.0",
     docs_url="/docs",
-    redoc_url="/redoc"
+    redoc_url="/redoc",
+    lifespan=lifespan
 )
 
 # Add CORS middleware

@@ -12,6 +12,7 @@ from datetime import datetime
 
 from controllers.safety_controller import SafetyController
 from config import SUPPORTED_SCENARIOS, MAX_FILE_SIZE, ALLOWED_EXTENSIONS
+from scheduler import EventScheduler
 
 # Initialize router
 router = APIRouter(prefix="/api/safety", tags=["Safety Detection"])
@@ -235,3 +236,104 @@ def _process_safety_event_async(job_id: str, camera_id: str, timestamp: str = No
         safety_jobs[job_id]["status"] = JobStatus.FAILED
         safety_jobs[job_id]["end_time"] = datetime.now().isoformat()
         safety_jobs[job_id]["error"] = str(e)
+
+
+# Scheduler endpoints
+@router.get("/scheduler/status")
+async def get_scheduler_status():
+    """
+    Get current scheduler status
+    """
+    try:
+        from server import scheduler
+        if scheduler:
+            status = scheduler.get_scheduler_status()
+            return JSONResponse(content={
+                "success": True,
+                "scheduler_status": status
+            })
+        else:
+            return JSONResponse(content={
+                "success": False,
+                "error": "Scheduler not initialized"
+            })
+    except Exception as e:
+        return JSONResponse(content={
+            "success": False,
+            "error": str(e)
+        })
+
+
+@router.post("/scheduler/start")
+async def start_scheduler():
+    """
+    Start the event scheduler
+    """
+    try:
+        from server import scheduler
+        if scheduler:
+            scheduler.start_scheduler()
+            return JSONResponse(content={
+                "success": True,
+                "message": "Scheduler started successfully"
+            })
+        else:
+            return JSONResponse(content={
+                "success": False,
+                "error": "Scheduler not initialized"
+            })
+    except Exception as e:
+        return JSONResponse(content={
+            "success": False,
+            "error": str(e)
+        })
+
+
+@router.post("/scheduler/stop")
+async def stop_scheduler():
+    """
+    Stop the event scheduler
+    """
+    try:
+        from server import scheduler
+        if scheduler:
+            scheduler.stop_scheduler()
+            return JSONResponse(content={
+                "success": True,
+                "message": "Scheduler stopped successfully"
+            })
+        else:
+            return JSONResponse(content={
+                "success": False,
+                "error": "Scheduler not initialized"
+            })
+    except Exception as e:
+        return JSONResponse(content={
+            "success": False,
+            "error": str(e)
+        })
+
+
+@router.post("/scheduler/pull-now")
+async def pull_events_now():
+    """
+    Manually trigger event pull from cloud storage
+    """
+    try:
+        from server import scheduler
+        if scheduler:
+            scheduler.pull_events_from_cloud()
+            return JSONResponse(content={
+                "success": True,
+                "message": "Event pull triggered successfully"
+            })
+        else:
+            return JSONResponse(content={
+                "success": False,
+                "error": "Scheduler not initialized"
+            })
+    except Exception as e:
+        return JSONResponse(content={
+            "success": False,
+            "error": str(e)
+        })
