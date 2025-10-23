@@ -85,7 +85,7 @@ def test_edge_pc_detection():
         create_test_video(test_video_path, scenario="smoke")
         
         # Initialize edge detector
-        detector = EdgeMoondreamDetector(use_local_storage=True)
+        detector = EdgeMoondreamDetector()
         
         # Run edge analysis
         result = detector.run_complete_edge_analysis(test_video_path, "CAMERA_001")
@@ -162,7 +162,7 @@ def test_fastapi_validation():
     
     try:
         # Initialize safety controller
-        controller = SafetyController(use_local_storage=True)
+        controller = SafetyController()
         
         # Run true positive detection
         result = controller.process_safety_event("CAMERA_001")
@@ -255,14 +255,14 @@ def test_multiple_scenarios():
             create_test_video(test_video_path, scenario=scenario)
             
             # Run edge detection
-            detector = EdgeMoondreamDetector(use_local_storage=True)
+            detector = EdgeMoondreamDetector()
             edge_result = detector.run_complete_edge_analysis(test_video_path, f"CAMERA_{scenario.upper()}")
             
             if edge_result["success"]:
                 print(f"   ✅ Edge detection: {edge_result['detected_scenarios']}")
                 
                 # Run FastAPI validation
-                controller = SafetyController(use_local_storage=True)
+                controller = SafetyController()
                 validation_result = controller.process_safety_event(f"CAMERA_{scenario.upper()}")
                 
                 if validation_result["success"]:

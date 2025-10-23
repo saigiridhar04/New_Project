@@ -3,6 +3,8 @@ Scenario-specific prompts for Moondream safety detection system
 Adapted from VISIONAI-VIT for scenario-based processing
 """
 
+from typing import List
+
 scenario_prompts = {
     "smoke_detection": {
         "vision": {
